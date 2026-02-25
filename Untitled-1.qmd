@@ -1,0 +1,58 @@
+---
+title: "Visualización Hola Mundo"
+author: "Ricardo"
+format: html
+code-fold: true 
+---
+
+# Dataset
+
+Vamos a utilizar el dataset de `carros` de vega_dataset <https://vega.github.io/vega-datasets/>
+
+```{python}
+import altair as alt
+from vega_datasets import data
+import pandas as pd
+
+```
+
+# Carga del dataset
+```{python}
+donations = pd.read_csv("https://raw.githubusercontent.com/erickedu85/dataset/master/donations.csv",parse_dates=["date"])
+donations.head()
+```
+```{python}
+#date theeeprint(alt.theme.names())
+alt.themes.enable("dark")
+```
+
+```{python}
+alt.Chart(donations).mark_line().encode(
+    alt.X("date"),
+    alt.Y("sum")
+).interactive()
+```
+# Gráfico de barras
+```{python}
+list_week_day = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+top_day = donations.groupby("week_day")["sum"].sum().idxmax()
+chart = alt.Chart(donations).mark_bar().encode(
+    alt.X("sum(sum)"),
+    alt.Y("week_day",sort = list_week_day),
+    color = alt.condition(
+        alt.datum.week_day == top_day,
+        alt.value("coral"),
+        alt.value("steelblue")
+    )
+)
+texto = chart.mark_text(align="left",dx=5).encode(
+    text = alt.Text("sum(sum)"),
+  # text = alt.condition(
+   #     alt.datum.week_day == top_day,
+    #    alt.Text("sum(sum):Q", format="$.3s"),
+     #   alt.value("")
+    #)
+)
+chart + texto
+```
+
